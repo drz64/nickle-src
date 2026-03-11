@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'antlr'
+}
+
+repositories { mavenCentral() }
+
+dependencies {
+    antlr "org.antlr:antlr4:4.13.1"
+    implementation "org.antlr:antlr4-runtime:4.13.1"
+}
+
+application {
+    mainClass = "nickle.Driver"
+}
+
+generateGrammarSource {
+    arguments += ["-visitor", "-listener"]
+}
+
+jar {
+    archiveBaseName.set('nickle')
+    archiveVersion.set('1.0')
+    archiveClassifier.set('')
+
+    manifest {
+        attributes(
+            'Main-Class': 'nickle.Driver'
+        )
+    }
+}
