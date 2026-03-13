@@ -7,18 +7,19 @@ plugins {
 repositories { mavenCentral() }
 
 dependencies {
-    antlr "org.antlr:antlr4:4.13.1"
-    implementation "org.antlr:antlr4-runtime:4.13.1"
+    antlr "org.antlr:antlr4:4.9.2"
+    implementation "org.antlr:antlr4-runtime:4.9.2"
 }
 
 application {
-    mainClass = "nickle.Driver"
+    mainClass = "nickle.compile"
 }
 
 generateGrammarSource {
     arguments += ["-visitor", "-listener"]
 }
 
+/*
 jar {
     archiveBaseName.set('nickle')
     archiveVersion.set('1.0')
@@ -26,7 +27,36 @@ jar {
 
     manifest {
         attributes(
-            'Main-Class': 'nickle.Driver'
+            'Main-Class': 'nickle.compile'
         )
+    }
+}
+*/
+
+tasks.register('dist', Sync) {
+    dependsOn jar
+
+    into layout.projectDirectory.dir("../dist/nickle")
+
+    from(jar)
+
+    from("src/main/c") {
+        include "*.c", "*.h"
+    }
+}
+
+jar {
+    archiveBaseName.set('nickle')
+    archiveVersion.set('1.0')
+    archiveClassifier.set('')
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    manifest {
+        attributes 'Main-Class': 'nickle.compile'
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }

@@ -4,7 +4,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-public final class Driver {
+public final class compile {
 
     public static void main(String[] args) throws Exception {
         if (args.length != 1) {

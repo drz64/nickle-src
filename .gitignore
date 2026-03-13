@@ -1,6 +1,8 @@
 .vscode/
 .gradle/
+**/.antlr/
 build/
+bin/
 scratch/
 *.class
 *.interp
