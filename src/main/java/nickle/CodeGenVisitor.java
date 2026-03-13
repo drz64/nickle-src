@@ -246,7 +246,7 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
         String f = ctx.ID(1).getText();
         ensureLabel(t);
         ensureLabel(f);
-        line("if (cpu->regs[%s]) goto %s; else goto %s;", cond, t, f);
+        line("if (get_reg(cpu,%s)) goto %s; else goto %s;", cond, t, f);
         return null;
     }
 
@@ -259,7 +259,7 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
 
     @Override public String visitJump(NickleILOCParser.JumpContext ctx) {
         String r = regExpr(ctx.reg());
-        out.append("    switch ((int64_t)cpu->regs[").append(r).append("]) {\n");
+        out.append("    switch (get_reg(cpu,").append(r).append(")) {\n");
         for (var e : model.labelIds().entrySet()) {
             out.append("        case ").append(e.getValue()).append(": goto ").append(e.getKey()).append(";\n");
         }
@@ -281,7 +281,7 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
     /* ---------------- helpers ---------------- */
 
     private void emitPreamble() {
-        out.append("#include \"cpu.h\"\n#include \"iloc.h\"\n\n");
+        out.append("#include \"iloc.h\"\n\n");
     }
 
     private void emitProgramConfig() {
@@ -337,9 +337,9 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
                 throw new IllegalArgumentException("register out of range r" + idx + " (N=" + model.userRegisters() + ")");
             return Integer.toString(idx);
         }
-        if (r.R_STATIC() != null) return "(int)cpu->r_static_idx";
-        if (r.R_ARGC() != null)   return "(int)cpu->r_argc_idx";
-        if (r.R_ARGV() != null)   return "(int)cpu->r_argv_idx";
+        if (r.R_STATIC() != null) return "get_r_static_idx(cpu)";
+        if (r.R_ARGC() != null)   return "get_r_argc_idx(cpu)";
+        if (r.R_ARGV() != null)   return "get_r_argv_idx(cpu)";
         throw new IllegalStateException("unknown reg");
     }
 
