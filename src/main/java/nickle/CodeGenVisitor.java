@@ -59,8 +59,8 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
         return visit(ctx.plainInstruction());
     }
 
-    @Override
-    public String visitPlainInstruction(NickleILOCParser.PlainInstructionContext ctx) {
+//    @Override
+    public String XXXvisitPlainInstruction(NickleILOCParser.PlainInstructionContext ctx) {
         // Arithmetic
         if (ctx.nop() != null) return visit(ctx.nop());
         if (ctx.add() != null) return visit(ctx.add());
@@ -116,15 +116,16 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
         if (ctx.cmpNE() != null) return visit(ctx.cmpNE());
         if (ctx.cbr() != null) return visit(ctx.cbr());
         if (ctx.jumpI() != null) return visit(ctx.jumpI());
-        if (ctx.jump() != null) return visit(ctx.jump());
 
         // IO / debug / misc
         if (ctx.pInt() != null) return visit(ctx.pInt());
         if (ctx.pChar() != null) return visit(ctx.pChar());
         if (ctx.pStr() != null) return visit(ctx.pStr());
+        if (ctx.pPrompt() != null) return visit(ctx.pPrompt()) ; 
         if (ctx.dReg() != null) return visit(ctx.dReg());
         if (ctx.dMem() != null) return visit(ctx.dMem());
         if (ctx.atoi() != null) return visit(ctx.atoi());
+        if (ctx.is_i() != null) return visit(ctx.is_i()) ; 
         if (ctx.haltInstr() != null) return visit(ctx.haltInstr());
 
         return null;
@@ -257,31 +258,26 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
         return null;
     }
 
-    @Override public String visitJump(NickleILOCParser.JumpContext ctx) {
-        String r = regExpr(ctx.reg());
-        out.append("    switch (get_reg(cpu,").append(r).append(")) {\n");
-        for (var e : model.labelIds().entrySet()) {
-            out.append("        case ").append(e.getValue()).append(": goto ").append(e.getKey()).append(";\n");
-        }
-        out.append("        default: nickle_trap(cpu, \"invalid jump target\"); return;\n");
-        out.append("    }\n");
-        return null;
-    }
-
     @Override public String visitPInt(NickleILOCParser.PIntContext ctx) { line("iloc_p_int(cpu, %s);", regExpr(ctx.reg())); return null; }
     @Override public String visitPChar(NickleILOCParser.PCharContext ctx){ line("iloc_p_char(cpu, %s);", regExpr(ctx.reg())); return null; }
     @Override public String visitPStr(NickleILOCParser.PStrContext ctx) { line("iloc_p_str(cpu, %s);", regExpr(ctx.reg())); return null; }
+    @Override public String visitPPrompt(NickleILOCParser.PPromptContext ctx) {line("printf(%s);",ctx.stringLiteral().getText()) ; return null ;} 
     @Override public String visitDReg(NickleILOCParser.DRegContext ctx) { line("iloc_d_reg(cpu);"); return null; }
     @Override public String visitDMem(NickleILOCParser.DMemContext ctx) { line("iloc_d_mem(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); return null; }
 
     @Override public String visitAtoi(NickleILOCParser.AtoiContext ctx){ line("iloc_atoi(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); return null; }
+	@Override public String visitIs_i(NickleILOCParser.Is_iContext ctx) { line("iloc_is_i(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); return null; }
+
+
 
     @Override public String visitHaltInstr(NickleILOCParser.HaltInstrContext ctx) { line("iloc_halt(cpu);"); return null; }
 
     /* ---------------- helpers ---------------- */
 
     private void emitPreamble() {
-        out.append("#include \"iloc.h\"\n\n");
+        out.append("#include \"iloc.h\"\n");
+        out.append("#include \"stdio.h\"\n");
+        out.append("\n");
     }
 
     private void emitProgramConfig() {

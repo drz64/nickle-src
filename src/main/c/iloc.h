@@ -87,6 +87,7 @@ void iloc_d_mem(cpu_t* cpu, int r1, int r2);
 
 /* ================= Misc ================= */
 void iloc_atoi(cpu_t* cpu, int r_src, int r_dst);
+void iloc_is_i(cpu_t* cpu, int r_src, int r_dst);
 void iloc_halt(cpu_t* cpu);
 
 /* ================= read-only registers ================= */

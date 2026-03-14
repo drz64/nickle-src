@@ -87,6 +87,53 @@ void iloc_atoi(cpu_t* cpu, int r_src, int r_dst) {
     cpu->regs[r_dst] = v;
 }
 
+
+static uint64_t is_u64(cpu_t* cpu, const char* s) {
+    if (*s == '\0') return 0;
+
+    int base = 10;
+    if (s[0]=='0' && (s[1]=='x' || s[1]=='X')) { base = 16; s += 2; if (*s=='\0') return 0 ; }
+    else if (s[0]=='0' && (s[1]=='b' || s[1]=='B')) { base = 2; s += 2; if (*s=='\0') return 0 ; }
+    else if (s[0]=='0' && s[1] != '\0') { base = 8; s += 1; }
+
+    for (; *s; s++) {
+        char c = *s;
+        if (base == 2)  { if (!is_bin_digit(c)) return 0 ; }
+        else if (base == 8) { if (!is_oct_digit(c)) return 0 ; }
+        else if (base == 10) { if (!is_dec_digit(c)) return 0 ; }
+        else { // 16
+            if (!is_hex_digit(c)) return 0 ;
+        }
+    }
+    return 1;
+}
+
+
+
+void iloc_is_i(cpu_t* cpu, int r_src, int r_dst) {
+    if (cpu->halted) return;
+    uint64_t addr = cpu->regs[r_src];
+
+    // read null-terminated string within bounds
+    uint64_t i = addr;
+    while (1) {
+        nickle_check_mem(cpu, i, 1);
+        if (cpu->mem[i] == 0) break;
+        i++;
+    }
+    size_t len = (size_t)(i - addr);
+    // copy to local buffer
+    char* tmp = (char*)malloc(len + 1);
+    if (!tmp) nickle_trap(cpu, "atoi: allocation failed");
+    memcpy(tmp, cpu->mem + addr, len);
+    tmp[len] = 0;
+
+    uint64_t v = is_u64(cpu, tmp);
+    free(tmp);
+    cpu->regs[r_dst] = v;
+}
+
+
 void iloc_halt(cpu_t* cpu) {
     cpu->halted = true;
 }

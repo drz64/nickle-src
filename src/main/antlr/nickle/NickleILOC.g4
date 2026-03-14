@@ -64,9 +64,8 @@ plainInstruction
     | cmpLT | cmpLE | cmpEQ | cmpGE | cmpGT | cmpNE
     | cbr
     | jumpI
-    | jump
-    | pInt | pChar | pStr | dReg | dMem
-    | atoi
+    | pInt | pChar | pStr | pPrompt | dReg | dMem
+    | atoi | is_i 
     | haltInstr
     ;
 
@@ -126,18 +125,19 @@ cmpGE : CMP_GE reg COMMA reg ARROW reg ;
 cmpGT : CMP_GT reg COMMA reg ARROW reg ;
 cmpNE : CMP_NE reg COMMA reg ARROW reg ;
 
-cbr : CBR reg ID COMMA ID ;
+cbr : CBR reg ARROW ID COMMA ID ;
 
-jumpI : JUMPI ID ;
-jump  : JUMP reg ;
+jumpI : JUMPI ARROW ID ;
 
 pInt : P_INT reg ;
 pChar: P_CHAR reg ;
 pStr : P_STR reg ;
+pPrompt : P_PROMPT stringLiteral ;
 dReg : D_REG ;
 dMem : D_MEM reg COMMA reg ;
 
 atoi : ATOI reg ARROW reg ;
+is_i : IS_I reg ARROW reg ; 
 
 haltInstr : HALT ;
 
@@ -225,14 +225,15 @@ CMP_NE        : 'cmp_NE' ;
 
 CBR           : 'cbr' ;
 JUMPI         : 'jumpI' ;
-JUMP          : 'jump' ;
 
 P_INT         : 'p_int' ;
 P_CHAR        : 'p_char' ;
 P_STR         : 'p_str' ;
+P_PROMPT      : 'p_prompt' ;
 D_REG         : 'd_reg' ;
 D_MEM         : 'd_mem' ;
 ATOI          : 'atoi' ;
+IS_I          : 'is_i' ;
 
 HALT          : 'halt' ;
 
