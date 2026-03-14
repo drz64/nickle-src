@@ -59,187 +59,105 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
         return visit(ctx.plainInstruction());
     }
 
-//    @Override
-    public String XXXvisitPlainInstruction(NickleILOCParser.PlainInstructionContext ctx) {
-        // Arithmetic
-        if (ctx.nop() != null) return visit(ctx.nop());
-        if (ctx.add() != null) return visit(ctx.add());
-        if (ctx.sub() != null) return visit(ctx.sub());
-        if (ctx.mult() != null) return visit(ctx.mult());
-        if (ctx.div() != null) return visit(ctx.div());
-        if (ctx.addI() != null) return visit(ctx.addI());
-        if (ctx.subI() != null) return visit(ctx.subI());
-        if (ctx.rsubI() != null) return visit(ctx.rsubI());
-        if (ctx.multI() != null) return visit(ctx.multI());
-        if (ctx.divI() != null) return visit(ctx.divI());
-        if (ctx.rdivI() != null) return visit(ctx.rdivI());
-        if (ctx.lshift() != null) return visit(ctx.lshift());
-        if (ctx.lshiftI() != null) return visit(ctx.lshiftI());
-        if (ctx.rshift() != null) return visit(ctx.rshift());
-        if (ctx.rshiftI() != null) return visit(ctx.rshiftI());
-        if (ctx.andOp() != null) return visit(ctx.andOp());
-        if (ctx.andI() != null) return visit(ctx.andI());
-        if (ctx.orOp() != null) return visit(ctx.orOp());
-        if (ctx.orI() != null) return visit(ctx.orI());
-        if (ctx.xorOp() != null) return visit(ctx.xorOp());
-        if (ctx.xorI() != null) return visit(ctx.xorI());
-
-        // Memory
-        if (ctx.load() != null) return visit(ctx.load());
-        if (ctx.loadAI() != null) return visit(ctx.loadAI());
-        if (ctx.loadAO() != null) return visit(ctx.loadAO());
-        if (ctx.cload() != null) return visit(ctx.cload());
-        if (ctx.cloadAI() != null) return visit(ctx.cloadAI());
-        if (ctx.cloadAO() != null) return visit(ctx.cloadAO());
-        if (ctx.loadI() != null) return visit(ctx.loadI());
-        if (ctx.store() != null) return visit(ctx.store());
-        if (ctx.storeAI() != null) return visit(ctx.storeAI());
-        if (ctx.storeAO() != null) return visit(ctx.storeAO());
-        if (ctx.cstore() != null) return visit(ctx.cstore());
-        if (ctx.cstoreAI() != null) return visit(ctx.cstoreAI());
-        if (ctx.cstoreAO() != null) return visit(ctx.cstoreAO());
-
-        // Copies / conversions / conditional moves
-        if (ctx.i2i() != null) return visit(ctx.i2i());
-        if (ctx.c2c() != null) return visit(ctx.c2c());
-        if (ctx.c2i() != null) return visit(ctx.c2i());
-        if (ctx.i2c() != null) return visit(ctx.i2c());
-        if (ctx.c_i2i() != null) return visit(ctx.c_i2i());
-        if (ctx.c_c2c() != null) return visit(ctx.c_c2c());
-
-        // Control
-        if (ctx.cmpLT() != null) return visit(ctx.cmpLT());
-        if (ctx.cmpLE() != null) return visit(ctx.cmpLE());
-        if (ctx.cmpEQ() != null) return visit(ctx.cmpEQ());
-        if (ctx.cmpGE() != null) return visit(ctx.cmpGE());
-        if (ctx.cmpGT() != null) return visit(ctx.cmpGT());
-        if (ctx.cmpNE() != null) return visit(ctx.cmpNE());
-        if (ctx.cbr() != null) return visit(ctx.cbr());
-        if (ctx.jumpI() != null) return visit(ctx.jumpI());
-
-        // IO / debug / misc
-        if (ctx.pInt() != null) return visit(ctx.pInt());
-        if (ctx.pChar() != null) return visit(ctx.pChar());
-        if (ctx.pStr() != null) return visit(ctx.pStr());
-        if (ctx.pPrompt() != null) return visit(ctx.pPrompt()) ; 
-        if (ctx.dReg() != null) return visit(ctx.dReg());
-        if (ctx.dMem() != null) return visit(ctx.dMem());
-        if (ctx.atoi() != null) return visit(ctx.atoi());
-        if (ctx.is_i() != null) return visit(ctx.is_i()) ; 
-        if (ctx.haltInstr() != null) return visit(ctx.haltInstr());
-
-        return null;
-    }
 
     /* ---------------- concrete visits ---------------- */
 
-    @Override public String visitNop(NickleILOCParser.NopContext ctx){ line("iloc_nop(cpu);"); return null; }
+    @Override public String visitNop(NickleILOCParser.NopContext ctx) { return line("iloc_nop(cpu);"); }
 
-    @Override public String visitAdd(NickleILOCParser.AddContext ctx){
-        line("iloc_add(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
-    @Override public String visitSub(NickleILOCParser.SubContext ctx){
-        line("iloc_sub(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
-    @Override public String visitMult(NickleILOCParser.MultContext ctx){
-        line("iloc_mult(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
-    @Override public String visitDiv(NickleILOCParser.DivContext ctx){
-        line("iloc_div(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
+    @Override public String visitAdd(NickleILOCParser.AddContext ctx) { return line("iloc_add(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
 
-    @Override public String visitAddI(NickleILOCParser.AddIContext ctx){
-        line("iloc_addI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); return null; }
-    @Override public String visitSubI(NickleILOCParser.SubIContext ctx){
-        line("iloc_subI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); return null; }
-    @Override public String visitRsubI(NickleILOCParser.RsubIContext ctx){
-        line("iloc_rsubI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); return null; }
-    @Override public String visitMultI(NickleILOCParser.MultIContext ctx){
-        line("iloc_multI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); return null; }
-    @Override public String visitDivI(NickleILOCParser.DivIContext ctx){
-        line("iloc_divI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); return null; }
-    @Override public String visitRdivI(NickleILOCParser.RdivIContext ctx){
-        line("iloc_rdivI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); return null; }
+    @Override public String visitSub(NickleILOCParser.SubContext ctx) { return line("iloc_sub(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
 
-    @Override public String visitLshift(NickleILOCParser.LshiftContext ctx){
-        line("iloc_lshift(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
-    @Override public String visitLshiftI(NickleILOCParser.LshiftIContext ctx){
-        line("iloc_lshiftI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); return null; }
-    @Override public String visitRshift(NickleILOCParser.RshiftContext ctx){
-        line("iloc_rshift(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
-    @Override public String visitRshiftI(NickleILOCParser.RshiftIContext ctx){
-        line("iloc_rshiftI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); return null; }
+    @Override public String visitMult(NickleILOCParser.MultContext ctx) { return line("iloc_mult(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
 
-    @Override public String visitAndOp(NickleILOCParser.AndOpContext ctx){
-        line("iloc_and(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
-    @Override public String visitAndI(NickleILOCParser.AndIContext ctx){
-        line("iloc_andI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); return null; }
-    @Override public String visitOrOp(NickleILOCParser.OrOpContext ctx){
-        line("iloc_or(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
-    @Override public String visitOrI(NickleILOCParser.OrIContext ctx){
-        line("iloc_orI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); return null; }
-    @Override public String visitXorOp(NickleILOCParser.XorOpContext ctx){
-        line("iloc_xor(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
-    @Override public String visitXorI(NickleILOCParser.XorIContext ctx){
-        line("iloc_xorI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); return null; }
+    @Override public String visitDiv(NickleILOCParser.DivContext ctx) { return line("iloc_div(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
 
-    @Override public String visitLoad(NickleILOCParser.LoadContext ctx){
-        line("iloc_load(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); return null; }
-    @Override public String visitLoadAI(NickleILOCParser.LoadAIContext ctx){
-        line("iloc_loadAI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), offsetToC(ctx.offset()), regExpr(ctx.reg(1))); return null; }
-    @Override public String visitLoadAO(NickleILOCParser.LoadAOContext ctx){
-        line("iloc_loadAO(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
-    @Override public String visitCload(NickleILOCParser.CloadContext ctx){
-        line("iloc_cload(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); return null; }
-    @Override public String visitCloadAI(NickleILOCParser.CloadAIContext ctx){
-        line("iloc_cloadAI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), offsetToC(ctx.offset()), regExpr(ctx.reg(1))); return null; }
-    @Override public String visitCloadAO(NickleILOCParser.CloadAOContext ctx){
-        line("iloc_cloadAO(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
+    @Override public String visitAddI(NickleILOCParser.AddIContext ctx) { return line("iloc_addI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
 
-    @Override public String visitLoadI(NickleILOCParser.LoadIContext ctx){
+    @Override public String visitSubI(NickleILOCParser.SubIContext ctx) { return line("iloc_subI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+
+    @Override public String visitRsubI(NickleILOCParser.RsubIContext ctx) { return line("iloc_rsubI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+
+    @Override public String visitMultI(NickleILOCParser.MultIContext ctx) { return line("iloc_multI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+
+    @Override public String visitDivI(NickleILOCParser.DivIContext ctx) { return line("iloc_divI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+
+    @Override public String visitRdivI(NickleILOCParser.RdivIContext ctx) { return line("iloc_rdivI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+
+    @Override public String visitLshift(NickleILOCParser.LshiftContext ctx) { return line("iloc_lshift(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))) ; }
+
+    @Override public String visitLshiftI(NickleILOCParser.LshiftIContext ctx) { return line("iloc_lshiftI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+
+    @Override public String visitRshift(NickleILOCParser.RshiftContext ctx) { return line("iloc_rshift(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
+
+    @Override public String visitRshiftI(NickleILOCParser.RshiftIContext ctx) { return line("iloc_rshiftI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+
+    @Override public String visitAndOp(NickleILOCParser.AndOpContext ctx) { return line("iloc_and(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
+    
+    @Override public String visitAndI(NickleILOCParser.AndIContext ctx) { return line("iloc_andI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+
+    @Override public String visitOrOp(NickleILOCParser.OrOpContext ctx) { return line("iloc_or(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
+    
+    @Override public String visitOrI(NickleILOCParser.OrIContext ctx) { return line("iloc_orI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+
+    @Override public String visitXorOp(NickleILOCParser.XorOpContext ctx) { return line("iloc_xor(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
+
+    @Override public String visitXorI(NickleILOCParser.XorIContext ctx) { return line("iloc_xorI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+
+    @Override public String visitLoad(NickleILOCParser.LoadContext ctx) { return line("iloc_load(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); }
+
+    @Override public String visitLoadAI(NickleILOCParser.LoadAIContext ctx) { return line("iloc_loadAI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), offsetToC(ctx.offset()), regExpr(ctx.reg(1))); }
+
+    @Override public String visitLoadAO(NickleILOCParser.LoadAOContext ctx) { return line("iloc_loadAO(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
+
+    @Override public String visitCload(NickleILOCParser.CloadContext ctx) { return line("iloc_cload(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); }
+
+    @Override public String visitCloadAI(NickleILOCParser.CloadAIContext ctx) { return line("iloc_cloadAI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), offsetToC(ctx.offset()), regExpr(ctx.reg(1))); }
+
+    @Override public String visitCloadAO(NickleILOCParser.CloadAOContext ctx) { return line("iloc_cloadAO(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
+
+    @Override public String visitLoadI(NickleILOCParser.LoadIContext ctx) {
         String imm;
         if (ctx.number() != null) imm = numberToC(ctx.number().getText());
         else imm = Integer.toString(labelId(ctx.ID().getText())); // extension
-        line("iloc_loadI(cpu, %s, %s);", imm, regExpr(ctx.reg()));
-        return null;
+        return line("iloc_loadI(cpu, %s, %s);", imm, regExpr(ctx.reg()));
     }
 
-    @Override public String visitStore(NickleILOCParser.StoreContext ctx){
-        line("iloc_store(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); return null; }
-    @Override public String visitStoreAI(NickleILOCParser.StoreAIContext ctx){
-        line("iloc_storeAI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), offsetToC(ctx.offset())); return null; }
-    @Override public String visitStoreAO(NickleILOCParser.StoreAOContext ctx){
-        line("iloc_storeAO(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
+    @Override public String visitStore(NickleILOCParser.StoreContext ctx) { return line("iloc_store(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); }
+    
+    @Override public String visitStoreAI(NickleILOCParser.StoreAIContext ctx) { return  line("iloc_storeAI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), offsetToC(ctx.offset())); }
 
-    @Override public String visitCstore(NickleILOCParser.CstoreContext ctx){
-        line("iloc_cstore(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); return null; }
-    @Override public String visitCstoreAI(NickleILOCParser.CstoreAIContext ctx){
-        line("iloc_cstoreAI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), offsetToC(ctx.offset())); return null; }
-    @Override public String visitCstoreAO(NickleILOCParser.CstoreAOContext ctx){
-        line("iloc_cstoreAO(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
+    @Override public String visitStoreAO(NickleILOCParser.StoreAOContext ctx) { return line("iloc_storeAO(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
 
-    @Override public String visitI2i(NickleILOCParser.I2iContext ctx){
-        line("iloc_i2i(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); return null; }
-    @Override public String visitC2c(NickleILOCParser.C2cContext ctx){
-        line("iloc_c2c(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); return null; }
-    @Override public String visitC2i(NickleILOCParser.C2iContext ctx){
-        line("iloc_c2i(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); return null; }
-    @Override public String visitI2c(NickleILOCParser.I2cContext ctx){
-        line("iloc_i2c(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); return null; }
+    @Override public String visitCstore(NickleILOCParser.CstoreContext ctx) { return line("iloc_cstore(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); }
 
-    @Override public String visitC_i2i(NickleILOCParser.C_i2iContext ctx){
-        line("iloc_c_i2i(cpu, %s, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2)), regExpr(ctx.reg(3))); return null; }
-    @Override public String visitC_c2c(NickleILOCParser.C_c2cContext ctx){
-        line("iloc_c_c2c(cpu, %s, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2)), regExpr(ctx.reg(3))); return null; }
+    @Override public String visitCstoreAI(NickleILOCParser.CstoreAIContext ctx) { return line("iloc_cstoreAI(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), offsetToC(ctx.offset())); }
 
-    @Override public String visitCmpLT(NickleILOCParser.CmpLTContext ctx){
-        line("iloc_cmp_LT(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
-    @Override public String visitCmpLE(NickleILOCParser.CmpLEContext ctx){
-        line("iloc_cmp_LE(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
-    @Override public String visitCmpEQ(NickleILOCParser.CmpEQContext ctx){
-        line("iloc_cmp_EQ(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
-    @Override public String visitCmpGE(NickleILOCParser.CmpGEContext ctx){
-        line("iloc_cmp_GE(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
-    @Override public String visitCmpGT(NickleILOCParser.CmpGTContext ctx){
-        line("iloc_cmp_GT(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
-    @Override public String visitCmpNE(NickleILOCParser.CmpNEContext ctx){
-        line("iloc_cmp_NE(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); return null; }
+    @Override public String visitCstoreAO(NickleILOCParser.CstoreAOContext ctx) { return line("iloc_cstoreAO(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
+
+    @Override public String visitI2i(NickleILOCParser.I2iContext ctx) { return line("iloc_i2i(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); }
+
+    @Override public String visitC2c(NickleILOCParser.C2cContext ctx) { return line("iloc_c2c(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); }
+
+    @Override public String visitC2i(NickleILOCParser.C2iContext ctx) { return line("iloc_c2i(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); }
+
+    @Override public String visitI2c(NickleILOCParser.I2cContext ctx) { return line("iloc_i2c(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); }
+
+    @Override public String visitC_i2i(NickleILOCParser.C_i2iContext ctx) { return line("iloc_c_i2i(cpu, %s, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2)), regExpr(ctx.reg(3))); }
+
+    @Override public String visitC_c2c(NickleILOCParser.C_c2cContext ctx) { return line("iloc_c_c2c(cpu, %s, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2)), regExpr(ctx.reg(3))); }
+
+    @Override public String visitCmpLT(NickleILOCParser.CmpLTContext ctx) { return line("iloc_cmp_LT(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
+
+    @Override public String visitCmpLE(NickleILOCParser.CmpLEContext ctx) { return line("iloc_cmp_LE(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
+
+    @Override public String visitCmpEQ(NickleILOCParser.CmpEQContext ctx) { return line("iloc_cmp_EQ(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
+    
+    @Override public String visitCmpGE(NickleILOCParser.CmpGEContext ctx) { return line("iloc_cmp_GE(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
+
+    @Override public String visitCmpGT(NickleILOCParser.CmpGTContext ctx) { return line("iloc_cmp_GT(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
+
+    @Override public String visitCmpNE(NickleILOCParser.CmpNEContext ctx) { return line("iloc_cmp_NE(cpu, %s, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
 
     @Override public String visitCbr(NickleILOCParser.CbrContext ctx) {
         String cond = regExpr(ctx.reg());
@@ -247,30 +165,25 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
         String f = ctx.ID(1).getText();
         ensureLabel(t);
         ensureLabel(f);
-        line("if (get_reg(cpu,%s)) goto %s; else goto %s;", cond, t, f);
-        return null;
+        return line("if (get_reg(cpu,%s)) goto %s; else goto %s;", cond, t, f);
     }
 
     @Override public String visitJumpI(NickleILOCParser.JumpIContext ctx) {
         String l = ctx.ID().getText();
         ensureLabel(l);
-        line("goto %s;", l);
-        return null;
+        return line("goto %s;", l);
     }
 
-    @Override public String visitPInt(NickleILOCParser.PIntContext ctx) { line("iloc_p_int(cpu, %s);", regExpr(ctx.reg())); return null; }
-    @Override public String visitPChar(NickleILOCParser.PCharContext ctx){ line("iloc_p_char(cpu, %s);", regExpr(ctx.reg())); return null; }
-    @Override public String visitPStr(NickleILOCParser.PStrContext ctx) { line("iloc_p_str(cpu, %s);", regExpr(ctx.reg())); return null; }
-    @Override public String visitPPrompt(NickleILOCParser.PPromptContext ctx) {line("printf(%s);",ctx.stringLiteral().getText()) ; return null ;} 
-    @Override public String visitDReg(NickleILOCParser.DRegContext ctx) { line("iloc_d_reg(cpu);"); return null; }
-    @Override public String visitDMem(NickleILOCParser.DMemContext ctx) { line("iloc_d_mem(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); return null; }
+    @Override public String visitPInt(NickleILOCParser.PIntContext ctx) { return line("iloc_p_int(cpu, %s);", regExpr(ctx.reg())); }
+    @Override public String visitPChar(NickleILOCParser.PCharContext ctx) { return line("iloc_p_char(cpu, %s);", regExpr(ctx.reg())); }
+    @Override public String visitPStr(NickleILOCParser.PStrContext ctx) { return line("iloc_p_str(cpu, %s);", regExpr(ctx.reg())); }
+    @Override public String visitPPrompt(NickleILOCParser.PPromptContext ctx) { return line("printf(%s);",ctx.stringLiteral().getText()) ; } 
+    @Override public String visitDReg(NickleILOCParser.DRegContext ctx) { return line("iloc_d_reg(cpu);"); }
+    @Override public String visitDMem(NickleILOCParser.DMemContext ctx) { return line("iloc_d_mem(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); }
+    @Override public String visitAtoi(NickleILOCParser.AtoiContext ctx){ return line("iloc_atoi(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); }
+	@Override public String visitIs_i(NickleILOCParser.Is_iContext ctx) { return line("iloc_is_i(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); }
 
-    @Override public String visitAtoi(NickleILOCParser.AtoiContext ctx){ line("iloc_atoi(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); return null; }
-	@Override public String visitIs_i(NickleILOCParser.Is_iContext ctx) { line("iloc_is_i(cpu, %s, %s);", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); return null; }
-
-
-
-    @Override public String visitHaltInstr(NickleILOCParser.HaltInstrContext ctx) { line("iloc_halt(cpu);"); return null; }
+    @Override public String visitHaltInstr(NickleILOCParser.HaltInstrContext ctx) { return line("iloc_halt(cpu);"); }
 
     /* ---------------- helpers ---------------- */
 
@@ -310,8 +223,9 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
         out.append("}\n");
     }
 
-    private void line(String fmt, Object... args) {
+    private String line(String fmt, Object... args) {
         out.append("    ").append(String.format(Locale.ROOT, fmt, args)).append("\n");
+        return null ; 
     }
 
     private void ensureLabel(String name) {
