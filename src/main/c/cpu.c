@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <execinfo.h>
 
 const int EXTRA_REGS = 3 ; 
 const int R_STATIC_OFFSET = 0 ; 
@@ -24,6 +25,9 @@ static void die(const char* msg) {
 
 void nickle_trap(cpu_t* cpu, const char* msg) {
     fprintf(stderr, "Nickle trap: %s\n", msg);
+    void *buffer[50];
+    int n = backtrace(buffer, 50);
+    backtrace_symbols_fd(buffer, n, 2);  // 2 = stderr
     exit(1);
 }
 
@@ -48,12 +52,27 @@ void nickle_free(cpu_t* cpu) {
 }
 
 void nickle_build_static(cpu_t* cpu) {
-    uint64_t inline_size = (uint64_t)STATIC_COUNT * 8u;
+    uint64_t inline_size = 0;
     uint64_t string_size = 0;
 
-    for (size_t i = 0; i < STATIC_COUNT; i++)
-        if (STATIC_DATA[i].kind == D_STRING)
-            string_size += (uint64_t)strlen(STATIC_DATA[i].v.s) + 1u;
+    for (size_t i = 0; i < STATIC_COUNT; i++) {
+        switch (STATIC_DATA[i].kind) {
+            case D_INT:
+                inline_size += 8 ; 
+                break ; 
+
+            case D_CHAR:
+                inline_size += 1 ; 
+                break ; 
+
+            case D_STRING:
+                string_size += (uint64_t)strlen(STATIC_DATA[i].v.s) + 1;
+                inline_size += 8 ;
+                break ; 
+
+            
+        }
+    }
 
     uint64_t total = inline_size + string_size;
     if (total > cpu->mem_size) nickle_trap(cpu, "static preload does not fit in memory");
@@ -66,16 +85,19 @@ void nickle_build_static(cpu_t* cpu) {
     uint64_t string_ptr = base + inline_size;
 
     for (size_t i = 0; i < STATIC_COUNT; i++) {
-        nickle_check_mem(cpu, inline_ptr, 8);
+// Z says no need.       nickle_check_mem(cpu, inline_ptr, 8);
         switch (STATIC_DATA[i].kind) {
+
             case D_INT:
                 memcpy(cpu->mem + inline_ptr, &STATIC_DATA[i].v.i, 8);
+                inline_ptr += 8;
                 break;
-            case D_CHAR: {
-                uint64_t v = STATIC_DATA[i].v.c;
-                memcpy(cpu->mem + inline_ptr, &v, 8);
+
+            case D_CHAR: 
+                cpu->mem[inline_ptr] = STATIC_DATA[i].v.c ;
+                inline_ptr++ ;
                 break;
-            }
+            
             case D_STRING: {
                 const char* s = STATIC_DATA[i].v.s;
                 size_t n = strlen(s) + 1;
@@ -83,10 +105,10 @@ void nickle_build_static(cpu_t* cpu) {
                 memcpy(cpu->mem + inline_ptr, &string_ptr, 8);
                 memcpy(cpu->mem + string_ptr, s, n);
                 string_ptr += (uint64_t)n;
+                inline_ptr += 8;
                 break;
             }
         }
-        inline_ptr += 8;
     }
 }
 

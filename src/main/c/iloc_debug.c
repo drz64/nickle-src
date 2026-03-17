@@ -31,6 +31,10 @@ void iloc_d_reg(cpu_t* cpu) {
     for (size_t i = 0; i < cpu->reg_count /*+EXTRA_REGS*/ ; i++) {
         printf("r%zu = 0x%016" PRIx64 " (%" PRId64 ")\n", i, cpu->regs[i], (int64_t)cpu->regs[i]);
     }
+    printf("r_static = 0x%016" PRIx64 "\n", cpu->regs[cpu->reg_count+R_STATIC_OFFSET]);
+    printf("r_argc = 0x%016" PRIx64 " (%" PRId64 ")\n", cpu->regs[cpu->reg_count+R_ARGC_OFFSET], (int64_t) cpu->regs[cpu->reg_count+R_ARGC_OFFSET]);
+    printf("r_argv = 0x%016" PRIx64 "\n", cpu->regs[cpu->reg_count+R_ARGV_OFFSET]);
+
 }
 
 void iloc_d_mem(cpu_t* cpu, int r1, int r2) {

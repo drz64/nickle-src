@@ -36,26 +36,30 @@ public final class LayoutListener extends NickleILOCBaseListener {
         labelIds.put(lab, labelIds.size());
     }
 
+    private long staticDataOffset = 0L;
+
     @Override
     public void exitDataDecl(NickleILOCParser.DataDeclContext ctx) {
         String name = ctx.ID().getText();
 
         // @symbol offsets: index * 8
-        long offset = (long) staticData.size() * 8L;
-        staticOffsets.put(name, offset);
+        staticOffsets.put(name, staticDataOffset);
 
         var dv = ctx.dataValue();
         if (dv.DOT_INT() != null) {
             long v = parseNumber(dv.number().getText());
             staticData.add(DataDesc.ofInt(v));
+            staticDataOffset += 8 ; 
         } else if (dv.DOT_CHAR() != null) {
             long v = parseNumber(dv.number().getText());
             if (v < 0 || v > 255) throw new IllegalArgumentException(".char out of range (0..255): " + v);
             staticData.add(DataDesc.ofChar((int) v));
+            staticDataOffset += 1 ; 
         } else if (dv.DOT_STRING() != null) {
             String raw = dv.stringLiteral().getText();
             String s = unquote(raw);
             staticData.add(DataDesc.ofString(s));
+            staticDataOffset += 8 ; 
         } else {
             throw new IllegalStateException("unknown data value");
         }
