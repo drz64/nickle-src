@@ -9,5 +9,5 @@ public record CompileModel(
         int userRegisters,
         List<DataDesc> staticData,
         Map<String, Long> staticOffsets,
-        Map<String, Integer> labelIds
+        Map<String, Long> labelIds
 ) {}

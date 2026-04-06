@@ -52,23 +52,46 @@ labeledInstruction
     ;
 
 plainInstruction
-    : nop
-    | add | sub | mult | div
+    : instruction0 
+    | instruction1 
+    | instruction2 
+    | instruction3 
+    ;
+
+instruction0
+    : nop | halt
+    | dReg 
+    ; 
+
+instruction1
+    : jump | jumpI
+    | pInt | pChar | pStr | pPrompt 
+    ;
+
+instruction2
+    : loadI | load 
+    | cload 
+    | store 
+    | cstore 
+    | i2i | c2c | c2i | i2c
+    | dMem
+    | atoi | is_i 
+    ;
+
+instruction3
+    : add | sub | mult | div
     | addI | subI | rsubI | multI | divI | rdivI
     | lshift | lshiftI | rshift | rshiftI
     | andOp | andI | orOp | orI | xorOp | xorI
-    | load | loadAI | loadAO | cload | cloadAI | cloadAO | loadI
-    | store | storeAI | storeAO | cstore | cstoreAI | cstoreAO
-    | i2i | c2c | c2i | i2c
-    | c_i2i | c_c2c
+    | loadAI | loadAO 
+    | cloadAI | cloadAO 
+    | storeAI | storeAO 
+    | cstoreAI | cstoreAO
     | cmpLT | cmpLE | cmpEQ | cmpGE | cmpGT | cmpNE
     | cbr
-    | jumpI
-    | pInt | pChar | pStr | pPrompt | dReg | dMem
-    | atoi | is_i 
-    | haltInstr
     ;
 
+halt : HALT ;
 nop : NOP ;
 
 add   : ADD   reg COMMA reg ARROW reg ;
@@ -115,9 +138,6 @@ c2c : C2C reg ARROW reg ;
 c2i : C2I reg ARROW reg ;
 i2c : I2C reg ARROW reg ;
 
-c_i2i : C_I2I reg COMMA reg COMMA reg ARROW reg ;
-c_c2c : C_C2C reg COMMA reg COMMA reg ARROW reg ;
-
 cmpLT : CMP_LT reg COMMA reg ARROW reg ;
 cmpLE : CMP_LE reg COMMA reg ARROW reg ;
 cmpEQ : CMP_EQ reg COMMA reg ARROW reg ;
@@ -127,6 +147,7 @@ cmpNE : CMP_NE reg COMMA reg ARROW reg ;
 
 cbr : CBR reg ARROW ID COMMA ID ;
 
+jump  : JUMP  ARROW ID ;
 jumpI : JUMPI ARROW ID ;
 
 pInt : P_INT reg ;
@@ -139,13 +160,13 @@ dMem : D_MEM reg COMMA reg ;
 atoi : ATOI reg ARROW reg ;
 is_i : IS_I reg ARROW reg ; 
 
-haltInstr : HALT ;
 
 offset : atSymbol | number ;
 atSymbol : AT ID ;
 
 reg
     : REGISTER_NUM
+    | R_PC
     | R_STATIC
     | R_ARGC
     | R_ARGV
@@ -167,6 +188,7 @@ DOT_INT       : '.int' ;
 DOT_CHAR      : '.char' ;
 DOT_STRING    : '.string' ;
 
+HALT          : 'halt' ;
 NOP           : 'nop' ;
 
 ADD           : 'add' ;
@@ -193,17 +215,19 @@ ORI           : 'orI' ;
 XOR           : 'xor' ;
 XORI          : 'xorI' ;
 
+LOADI         : 'loadI' ;
 LOAD          : 'load' ;
 LOADAI        : 'loadAI' ;
 LOADAO        : 'loadAO' ;
+
 CLOAD         : 'cload' ;
 CLOADAI       : 'cloadAI' ;
 CLOADAO       : 'cloadAO' ;
-LOADI         : 'loadI' ;
 
 STORE         : 'store' ;
 STOREAI       : 'storeAI' ;
 STOREAO       : 'storeAO' ;
+
 CSTORE        : 'cstore' ;
 CSTOREAI      : 'cstoreAI' ;
 CSTOREAO      : 'cstoreAO' ;
@@ -213,8 +237,8 @@ C2C           : 'c2c' ;
 C2I           : 'c2i' ;
 I2C           : 'i2c' ;
 
-C_I2I         : 'c_i2i' ;
-C_C2C         : 'c_c2c' ;
+JUMP          : 'jump' ;
+JUMPI         : 'jumpI' ;
 
 CMP_LT        : 'cmp_LT' ;
 CMP_LE        : 'cmp_LE' ;
@@ -224,19 +248,19 @@ CMP_GT        : 'cmp_GT' ;
 CMP_NE        : 'cmp_NE' ;
 
 CBR           : 'cbr' ;
-JUMPI         : 'jumpI' ;
 
 P_INT         : 'p_int' ;
 P_CHAR        : 'p_char' ;
 P_STR         : 'p_str' ;
 P_PROMPT      : 'p_prompt' ;
+
 D_REG         : 'd_reg' ;
 D_MEM         : 'd_mem' ;
+
 ATOI          : 'atoi' ;
 IS_I          : 'is_i' ;
 
-HALT          : 'halt' ;
-
+R_PC          : 'pc' ; 
 R_STATIC      : 'r_static' ;
 R_ARGC        : 'r_argc' ;
 R_ARGV        : 'r_argv' ;
@@ -252,10 +276,11 @@ NUMBER
     : '0' [xX] [0-9a-fA-F]+
     | '0' [bB] [01]+
     | '0' [0-7]+
-    | [0-9]+
+    | '0'
+    | '-'? [1-9] [0-9]*
     ;
 
-ID            : [a-zA-Z_] [a-zA-Z0-9_]* ;
+ID  : [a-zA-Z_] [a-zA-Z0-9_]* ;
 
 STRING
     : '"' (~["\\] | '\\' .)* '"'

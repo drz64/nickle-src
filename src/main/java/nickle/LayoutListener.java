@@ -10,16 +10,17 @@ public final class LayoutListener extends NickleILOCBaseListener {
 
     private long memorySize = 65536;
     private int userRegisters = 32;
+    private long opOffset = 0 ; 
 
     private final List<DataDesc> staticData = new ArrayList<>();
     private final Map<String, Long> staticOffsets = new LinkedHashMap<>();
 
     // label -> stable integer id (0..L-1), insertion order is definition order
-    private final Map<String, Integer> labelIds = new LinkedHashMap<>();
+    private final Map<String, Long> labelIds = new LinkedHashMap<>();
 
     @Override
     public void exitMemoryDirective(NickleILOCParser.MemoryDirectiveContext ctx) {
-        memorySize = parseNumber(ctx.number().getText());
+        memorySize = (int) parseNumber(ctx.number().getText());
     }
 
     @Override
@@ -27,13 +28,18 @@ public final class LayoutListener extends NickleILOCBaseListener {
         userRegisters = (int) parseNumber(ctx.number().getText());
     }
 
+    @Override public void exitInstruction0(NickleILOCParser.Instruction0Context ctx) { opOffset += 1 ;}
+    @Override public void exitInstruction1(NickleILOCParser.Instruction1Context ctx) { opOffset += 2 ;}
+    @Override public void exitInstruction2(NickleILOCParser.Instruction2Context ctx) { opOffset += 3 ;}
+    @Override public void exitInstruction3(NickleILOCParser.Instruction3Context ctx) { opOffset += 4 ;}
+
     @Override
-    public void exitLabeledInstruction(NickleILOCParser.LabeledInstructionContext ctx) {
+    public void enterLabeledInstruction(NickleILOCParser.LabeledInstructionContext ctx) {
         String lab = ctx.ID().getText();
         if (labelIds.containsKey(lab)) {
             throw new IllegalArgumentException("duplicate label: " + lab);
         }
-        labelIds.put(lab, labelIds.size());
+        labelIds.put(lab, opOffset);
     }
 
     private long staticDataOffset = 0L;
