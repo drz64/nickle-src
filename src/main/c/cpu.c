@@ -1,6 +1,7 @@
 #include "nickle.h"
 #include "cpu.h"
 #include "iloc.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,7 +34,10 @@ void nickle_check_mem(uint64_t addr, uint64_t size) {
     if (addr < 0 || size < 0 || addr + size > cpu->mem_size) nickle_trap("memory access out of range");
 }
 
-cpu_t *nickle_init(size_t user_regs, size_t mem_size) {
+cpu_t *nickle_init() {
+
+    size_t user_regs = PROGRAM_USER_REGS ; 
+    size_t mem_size = PROGRAM_MEM_SIZE ; 
 
     cpu = (cpu_t *) malloc(sizeof(cpu_t)) ; 
     if (!cpu) die("allocation failed");
@@ -114,7 +118,7 @@ void nickle_build_static() {
 }
 
 void nickle_build_args(int argc, char** argv) {
-    int count = argc > 1 ? argc - 1 : 0;
+    int count = argc > 1 ? argc - 1 : 0; // same, but stresses a point. 
     cpu->regs[cpu->reg_count+R_ARGC_OFFSET] = count;
 
     if (count == 0) {
@@ -153,10 +157,12 @@ void nickle_build_args(int argc, char** argv) {
 
 int main(int argc, char** argv) {
     operators_registration() ;
-    cpu = nickle_init(PROGRAM_USER_REGS, PROGRAM_MEM_SIZE);
+    cpu = nickle_init();
     nickle_build_static();
     nickle_build_args(argc, argv);
+    cpu->regs[cpu->reg_count+R_RA_OFFSET] = PROGRAM_COUNT - 1 ; 
     run() ; 
+    iloc_d_reg() ; 
     nickle_free();
     return 0;
 }

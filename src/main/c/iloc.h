@@ -66,7 +66,7 @@ void iloc_cmp_GE();
 void iloc_cmp_GT();
 void iloc_cmp_NE();
 
-void iloc_jump() ; 
+void iloc_ret() ; 
 void iloc_jumpI() ; 
 void iloc_cbr() ; 
 

@@ -12,11 +12,12 @@ typedef struct __cpu_t {
     bool halted;
 } cpu_t;
 
-extern cpu_t *cpu ; // global. singleton.
+extern cpu_t *cpu ; // global. now singleton.
+extern int64_t PC ; // global.
 
 
 /* runtime lifecycle */
-cpu_t *nickle_init(size_t user_regs, size_t mem_size);
+cpu_t *nickle_init();
 void nickle_free();
 void nickle_build_static();
 void nickle_build_args(int argc, char** argv);

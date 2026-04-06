@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define R_PC_OFFSET 0
+#define R_RA_OFFSET 0
 #define R_STATIC_OFFSET 1
 #define R_ARGC_OFFSET 2
 #define R_ARGV_OFFSET 3 
@@ -69,7 +69,7 @@ typedef enum {
     op_c2i, 
     op_i2c, 
 
-    op_jump,
+    op_ret,
     op_jumpI, 
 
     op_cmp_LT, 
@@ -103,4 +103,5 @@ extern const size_t PROGRAM_MEM_SIZE;
 extern const data_desc_t STATIC_DATA[];
 extern const size_t STATIC_COUNT;
 extern const int64_t PROGRAM[];
+extern const size_t PROGRAM_COUNT;
 extern const char* PROMPTS[] ;

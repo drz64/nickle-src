@@ -130,6 +130,11 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
         return line("op_cbr", cond, model.labelIds().get(t), model.labelIds().get(f));
     }
 
+    @Override public String visitRet(NickleILOCParser.RetContext ctx) {
+        String r = regExpr(ctx.reg());
+        return line("op_ret", r);
+    }
+
     @Override public String visitJumpI(NickleILOCParser.JumpIContext ctx) {
         String l = ctx.ID().getText();
         ensureLabel(l);
@@ -196,6 +201,7 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
 
     private void emitProgramFooter() {
         out.append("  op_halt\n}; \n\n");
+        out.append("const size_t PROGRAM_COUNT = sizeof(PROGRAM) / sizeof(PROGRAM[0]);\n\n") ;
     }
 
     private String line(String opcode, Object... args) {
@@ -224,7 +230,7 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
                 throw new IllegalArgumentException("register out of range r" + idx + " (N=" + model.userRegisters() + ")");
             return Integer.toString(idx);
         }
-        if (r.R_PC() != null)     return "PROGRAM_USER_REGS+R_PC_OFFSET";
+        if (r.R_RA() != null)     return "PROGRAM_USER_REGS+R_RA_OFFSET";
         if (r.R_STATIC() != null) return "PROGRAM_USER_REGS+R_STATIC_OFFSET";
         if (r.R_ARGC() != null)   return "PROGRAM_USER_REGS+R_ARGC_OFFSET";
         if (r.R_ARGV() != null)   return "PROGRAM_USER_REGS+R_ARGV_OFFSET";

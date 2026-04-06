@@ -64,7 +64,7 @@ instruction0
     ; 
 
 instruction1
-    : jump | jumpI
+    : ret  | jumpI
     | pInt | pChar | pStr | pPrompt 
     ;
 
@@ -147,7 +147,7 @@ cmpNE : CMP_NE reg COMMA reg ARROW reg ;
 
 cbr : CBR reg ARROW ID COMMA ID ;
 
-jump  : JUMP  ARROW ID ;
+ret   : RET ARROW reg ;
 jumpI : JUMPI ARROW ID ;
 
 pInt : P_INT reg ;
@@ -166,7 +166,7 @@ atSymbol : AT ID ;
 
 reg
     : REGISTER_NUM
-    | R_PC
+    | R_RA
     | R_STATIC
     | R_ARGC
     | R_ARGV
@@ -237,7 +237,7 @@ C2C           : 'c2c' ;
 C2I           : 'c2i' ;
 I2C           : 'i2c' ;
 
-JUMP          : 'jump' ;
+RET           : 'ret' ;
 JUMPI         : 'jumpI' ;
 
 CMP_LT        : 'cmp_LT' ;
@@ -260,7 +260,7 @@ D_MEM         : 'd_mem' ;
 ATOI          : 'atoi' ;
 IS_I          : 'is_i' ;
 
-R_PC          : 'pc' ; 
+R_RA          : 'r_ra' ; 
 R_STATIC      : 'r_static' ;
 R_ARGC        : 'r_argc' ;
 R_ARGV        : 'r_argv' ;

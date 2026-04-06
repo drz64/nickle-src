@@ -56,7 +56,7 @@ const char* op_mnemonic[] = {
     "op_c2i", 
     "op_i2c", 
 
-    "op_jump",
+    "op_ret",
     "op_jumpI", 
 
     "op_cmp_LT", 
@@ -148,7 +148,7 @@ void operators_registration() {
     register_operator(op_c2i,iloc_c2i); 
     register_operator(op_i2c,iloc_i2c); 
 
-    register_operator(op_jump,iloc_jump);
+    register_operator(op_ret,iloc_ret);
     register_operator(op_jumpI,iloc_jumpI); 
 
     register_operator(op_cmp_LT,iloc_cmp_LT); 
@@ -173,13 +173,13 @@ void operators_registration() {
     validate_registration() ; 
 }
 
-int64_t* PC = 0 ; 
+int64_t PC = 0 ; 
 
 
 int64_t op() {
-    int64_t word = PROGRAM[*PC] ; 
-//    fprintf(stderr,"PC=%d op=%d\n",(int) *PC, (int) word) ;
-    (*PC)++ ;
+    int64_t word = PROGRAM[PC] ; 
+//    fprintf(stderr,"PC=%d op=%d\n",(int) PC, (int) word) ;
+    (PC)++ ;
     return word; 
 }
 
@@ -190,8 +190,7 @@ size_t r() {
 void run() {
 //    iloc_d_reg() ; 
 //    _iloc_d_mem(0,64) ; 
-    PC = &(cpu->regs[cpu->reg_count+R_PC_OFFSET]) ; 
-    *PC = 0 ; 
+    PC = 0 ; 
     cpu->halted = false ; 
     while (!cpu->halted) {
         int64_t mn = op() ; 
@@ -201,5 +200,5 @@ void run() {
 }
 
 void iloc_goto(int64_t adrs) {
-    *PC = adrs ; 
+    PC = adrs ; 
 }

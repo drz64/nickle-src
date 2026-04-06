@@ -1,5 +1,6 @@
 #include "iloc.h"
 #include "cpu.h"
+#include "nickle.h"
 
 void iloc_cmp_LT() {
     size_t r1 = r() ; size_t r2 = r() ; size_t r3 = r() ; 
@@ -26,13 +27,14 @@ void iloc_cmp_NE() {
     cpu->regs[r3] = cpu->regs[r1] != cpu->regs[r2] ? 1 : 0;
 }
 
-void iloc_jump() {
+void iloc_ret() {
     size_t r1 = r() ; 
     iloc_goto(cpu->regs[r1]) ; 
 }
 
 void iloc_jumpI() {
     int64_t imm = op() ; 
+    cpu->regs[cpu->reg_count+R_RA_OFFSET] = PC;
     iloc_goto(imm) ; 
 }
 
