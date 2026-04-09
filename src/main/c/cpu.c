@@ -51,6 +51,8 @@ cpu_t *nickle_init() {
     cpu->mem_size = mem_size;
 
     cpu->halted = true; // we're off by default. see run() 
+    cpu->pc = 0 ; 
+    cpu->limit = PROGRAM_RUN_LIMIT ;
     return cpu ; 
 }
 
@@ -145,8 +147,6 @@ void nickle_build_args(int argc, char** argv) {
 
     for (int i = 1; i < argc; i++) {
         size_t n = strlen(argv[i]) + 1;
-//Z        nickle_check_mem(inline_ptr, 8);
-//Z        nickle_check_mem(string_ptr, (uint64_t)n);
         memcpy(cpu->mem + inline_ptr, &string_ptr, 8);
         memcpy(cpu->mem + string_ptr, argv[i], n);
         string_ptr += n;
@@ -162,8 +162,9 @@ int main(int argc, char** argv) {
     nickle_build_args(argc, argv);
     cpu->regs[cpu->reg_count+R_RA_OFFSET] = PROGRAM_COUNT - 1 ; 
     run() ; 
+#ifdef DUMPREGS
     iloc_d_reg() ; 
+#endif
     nickle_free();
     return 0;
 }
-

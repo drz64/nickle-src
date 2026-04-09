@@ -69,6 +69,7 @@ typedef enum {
     op_c2i, 
     op_i2c, 
 
+    op_jsr,
     op_ret,
     op_jumpI, 
 
@@ -100,6 +101,7 @@ extern const char* op_mnemonic[] ;
 /* program-provided configuration (emitted by compiler in program.c) */
 extern const size_t PROGRAM_USER_REGS;
 extern const size_t PROGRAM_MEM_SIZE;
+extern const size_t PROGRAM_RUN_LIMIT;
 extern const data_desc_t STATIC_DATA[];
 extern const size_t STATIC_COUNT;
 extern const int64_t PROGRAM[];

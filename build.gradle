@@ -47,7 +47,7 @@ tasks.register('dist', Sync) {
 
 jar {
     archiveBaseName.set('nickle')
-    archiveVersion.set('1.0')
+    archiveVersion.set('0.2')
     archiveClassifier.set('')
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

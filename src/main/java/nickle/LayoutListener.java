@@ -8,8 +8,9 @@ import java.util.Map;
 
 public final class LayoutListener extends NickleILOCBaseListener {
 
-    private long memorySize = 65536;
-    private int userRegisters = 32;
+    private long memorySize = 0x10000; // 64kb
+    private int userRegisters = 16;
+    private int runLimit = 0; 
     private long opOffset = 0 ; 
 
     private final List<DataDesc> staticData = new ArrayList<>();
@@ -20,13 +21,19 @@ public final class LayoutListener extends NickleILOCBaseListener {
 
     @Override
     public void exitMemoryDirective(NickleILOCParser.MemoryDirectiveContext ctx) {
-        memorySize = (int) parseNumber(ctx.number().getText());
+        memorySize = (int) parseNumber(ctx.NUMBER().getText());
     }
 
     @Override
     public void exitRegistersDirective(NickleILOCParser.RegistersDirectiveContext ctx) {
-        userRegisters = (int) parseNumber(ctx.number().getText());
+        userRegisters = (int) parseNumber(ctx.NUMBER().getText());
     }
+
+    @Override
+    public void exitLimitDirective(NickleILOCParser.LimitDirectiveContext ctx) {
+        runLimit = (int) parseNumber(ctx.NUMBER().getText());
+    }
+
 
     @Override public void exitInstruction0(NickleILOCParser.Instruction0Context ctx) { opOffset += 1 ;}
     @Override public void exitInstruction1(NickleILOCParser.Instruction1Context ctx) { opOffset += 2 ;}
@@ -75,6 +82,7 @@ public final class LayoutListener extends NickleILOCBaseListener {
         return new CompileModel(
                 memorySize,
                 userRegisters,
+                runLimit,
                 List.copyOf(staticData),
                 Map.copyOf(staticOffsets),
                 Map.copyOf(labelIds)

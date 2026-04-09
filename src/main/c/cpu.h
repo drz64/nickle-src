@@ -10,6 +10,9 @@ typedef struct __cpu_t {
     uint8_t* mem;
 
     bool halted;
+    int64_t pc; 
+    size_t limit;
+
 } cpu_t;
 
 extern cpu_t *cpu ; // global. now singleton.

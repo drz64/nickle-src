@@ -2,12 +2,15 @@
 package nickle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
 
     private final CompileModel model;
-    private final List<String> prompts = new ArrayList<String>() ; 
+    private final List<String> prompts = new ArrayList<>() ; 
+    private final Map<String,String> defines = new HashMap<>() ; 
     private final StringBuilder out = new StringBuilder();
 
     public CodeGenVisitor(CompileModel model) {
@@ -16,6 +19,13 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
 
     @Override
     public String visitProgram(NickleILOCParser.ProgramContext ctx) {
+
+        for (NickleILOCParser.DirectiveContext d : ctx.directive()) {
+            if (d.defineDirective() instanceof NickleILOCParser.DefineDirectiveContext ddctx) {
+                defines.put(ddctx.ID().getText(), ddctx.NUMBER().getText()) ;
+            }
+        }
+
         emitPreamble();
         emitProgramConfig();
         emitStaticData();
@@ -25,8 +35,6 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
         emitPrompts() ; 
         return out.toString();
     }
-
-    /* ---------------- concrete visits ---------------- */
 
     @Override public String visitNop(NickleILOCParser.NopContext ctx) { return line("op_nop"); }
 
@@ -38,37 +46,37 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
 
     @Override public String visitDiv(NickleILOCParser.DivContext ctx) { return line("op_div", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
 
-    @Override public String visitAddI(NickleILOCParser.AddIContext ctx) { return line("op_addI", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+    @Override public String visitAddI(NickleILOCParser.AddIContext ctx) { return line("op_addI", regExpr(ctx.reg(0)), numberToC(ctx.number()), regExpr(ctx.reg(1))); }
 
-    @Override public String visitSubI(NickleILOCParser.SubIContext ctx) { return line("op_subI", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+    @Override public String visitSubI(NickleILOCParser.SubIContext ctx) { return line("op_subI", regExpr(ctx.reg(0)), numberToC(ctx.number()), regExpr(ctx.reg(1))); }
 
-    @Override public String visitRsubI(NickleILOCParser.RsubIContext ctx) { return line("op_rsubI", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+    @Override public String visitRsubI(NickleILOCParser.RsubIContext ctx) { return line("op_rsubI", regExpr(ctx.reg(0)), numberToC(ctx.number()), regExpr(ctx.reg(1))); }
 
-    @Override public String visitMultI(NickleILOCParser.MultIContext ctx) { return line("op_multI", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+    @Override public String visitMultI(NickleILOCParser.MultIContext ctx) { return line("op_multI", regExpr(ctx.reg(0)), numberToC(ctx.number()), regExpr(ctx.reg(1))); }
 
-    @Override public String visitDivI(NickleILOCParser.DivIContext ctx) { return line("op_divI", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+    @Override public String visitDivI(NickleILOCParser.DivIContext ctx) { return line("op_divI", regExpr(ctx.reg(0)), numberToC(ctx.number()), regExpr(ctx.reg(1))); }
 
-    @Override public String visitRdivI(NickleILOCParser.RdivIContext ctx) { return line("op_rdivI", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+    @Override public String visitRdivI(NickleILOCParser.RdivIContext ctx) { return line("op_rdivI", regExpr(ctx.reg(0)), numberToC(ctx.number()), regExpr(ctx.reg(1))); }
 
     @Override public String visitLshift(NickleILOCParser.LshiftContext ctx) { return line("op_lshift", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))) ; }
 
-    @Override public String visitLshiftI(NickleILOCParser.LshiftIContext ctx) { return line("op_lshiftI", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+    @Override public String visitLshiftI(NickleILOCParser.LshiftIContext ctx) { return line("op_lshiftI", regExpr(ctx.reg(0)), numberToC(ctx.number()), regExpr(ctx.reg(1))); }
 
     @Override public String visitRshift(NickleILOCParser.RshiftContext ctx) { return line("op_rshift", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
 
-    @Override public String visitRshiftI(NickleILOCParser.RshiftIContext ctx) { return line("op_rshiftI", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+    @Override public String visitRshiftI(NickleILOCParser.RshiftIContext ctx) { return line("op_rshiftI", regExpr(ctx.reg(0)), numberToC(ctx.number()), regExpr(ctx.reg(1))); }
 
     @Override public String visitAndOp(NickleILOCParser.AndOpContext ctx) { return line("op_and", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
     
-    @Override public String visitAndI(NickleILOCParser.AndIContext ctx) { return line("op_andI", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+    @Override public String visitAndI(NickleILOCParser.AndIContext ctx) { return line("op_andI", regExpr(ctx.reg(0)), numberToC(ctx.number()), regExpr(ctx.reg(1))); }
 
     @Override public String visitOrOp(NickleILOCParser.OrOpContext ctx) { return line("op_or", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
     
-    @Override public String visitOrI(NickleILOCParser.OrIContext ctx) { return line("op_orI", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+    @Override public String visitOrI(NickleILOCParser.OrIContext ctx) { return line("op_orI", regExpr(ctx.reg(0)), numberToC(ctx.number()), regExpr(ctx.reg(1))); }
 
     @Override public String visitXorOp(NickleILOCParser.XorOpContext ctx) { return line("op_xor", regExpr(ctx.reg(0)), regExpr(ctx.reg(1)), regExpr(ctx.reg(2))); }
 
-    @Override public String visitXorI(NickleILOCParser.XorIContext ctx) { return line("op_xorI", regExpr(ctx.reg(0)), numberToC(ctx.number().getText()), regExpr(ctx.reg(1))); }
+    @Override public String visitXorI(NickleILOCParser.XorIContext ctx) { return line("op_xorI", regExpr(ctx.reg(0)), numberToC(ctx.number()), regExpr(ctx.reg(1))); }
 
     @Override public String visitLoad(NickleILOCParser.LoadContext ctx) { return line("op_load", regExpr(ctx.reg(0)), regExpr(ctx.reg(1))); }
 
@@ -84,7 +92,7 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
 
     @Override public String visitLoadI(NickleILOCParser.LoadIContext ctx) {
         String imm;
-        if (ctx.number() != null) imm = numberToC(ctx.number().getText());
+        if (ctx.number() != null) imm = numberToC(ctx.number());
         else imm = Long.toString(labelId(ctx.ID().getText())); // extension
         return line("op_loadI", imm, regExpr(ctx.reg()));
     }
@@ -130,6 +138,12 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
         return line("op_cbr", cond, model.labelIds().get(t), model.labelIds().get(f));
     }
 
+    @Override public String visitJsr(NickleILOCParser.JsrContext ctx) {
+        String l = ctx.ID().getText();
+        ensureLabel(l);
+        return line("op_jsr", model.labelIds().get(l));
+    }
+
     @Override public String visitRet(NickleILOCParser.RetContext ctx) {
         String r = regExpr(ctx.reg());
         return line("op_ret", r);
@@ -164,7 +178,12 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
 
     private void emitProgramConfig() {
         out.append("const size_t PROGRAM_USER_REGS = ").append(model.userRegisters()).append(";\n");
-        out.append("const size_t PROGRAM_MEM_SIZE  = ").append(model.memorySize()).append(";\n\n");
+        out.append("const size_t PROGRAM_MEM_SIZE  = ").append(model.memorySize()).append(";\n");
+        out.append("#ifdef FORCE_LIMIT\n") ; 
+        out.append("const size_t PROGRAM_RUN_LIMIT = FORCE_LIMIT;\n");
+        out.append("#else\n") ; 
+        out.append("const size_t PROGRAM_RUN_LIMIT = ").append(model.limit()).append(";\n");
+        out.append("#endif\n\n") ; 
     }
 
     private void emitStaticData() {
@@ -200,13 +219,20 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
     }
 
     private void emitProgramFooter() {
-        out.append("  op_halt\n}; \n\n");
+        String s = String.format("  /* %04x */  ", counter++) ; 
+        out.append(s).append("op_halt\n}; \n\n");
         out.append("const size_t PROGRAM_COUNT = sizeof(PROGRAM) / sizeof(PROGRAM[0]);\n\n") ;
     }
 
+    private int counter = 0 ; 
     private String line(String opcode, Object... args) {
-        out.append("  ").append(opcode).append(", ") ;
-        for (Object a : args) out.append(a).append(", ") ; 
+        String s = String.format("  /* %04x */  ", counter) ; 
+        out.append(s).append(opcode).append(", ") ;
+        counter++ ; 
+        for (Object a : args) {
+            out.append(a).append(", ") ; 
+            counter++ ; 
+        }
         out.append("\n") ; 
         return null ; 
     }
@@ -244,16 +270,24 @@ public final class CodeGenVisitor extends NickleILOCBaseVisitor<String> {
             if (off == null) throw new IllegalArgumentException("unknown @symbol: " + sym);
             return off.toString();
         }
-        return numberToC(o.number().getText());
+        return numberToC(o.number());
     }
 
-    static String numberToC(String text) {
-        long v;
-        if (text.startsWith("0x") || text.startsWith("0X")) v = Long.parseUnsignedLong(text.substring(2), 16);
-        else if (text.startsWith("0b") || text.startsWith("0B")) v = Long.parseUnsignedLong(text.substring(2), 2);
-        else if (text.length() > 1 && text.startsWith("0")) v = Long.parseUnsignedLong(text.substring(1), 8);
-        else v = Long.parseLong(text, 10);
-        return Long.toUnsignedString(v);
+    private long longValueOf(String text) {
+        if (text.startsWith("0x") || text.startsWith("0X")) return Long.parseUnsignedLong(text.substring(2), 16);
+        else if (text.startsWith("0b") || text.startsWith("0B")) return Long.parseUnsignedLong(text.substring(2), 2);
+        else if (text.length() > 1 && text.startsWith("0")) return Long.parseUnsignedLong(text.substring(1), 8);
+        return Long.parseLong(text, 10);
+    }
+
+    String numberToC(NickleILOCParser.NumberContext number) {
+        if (number.NUMBER() != null) {
+            return Long.toString(longValueOf(number.getText())) ; 
+        } else { // must be a QM ID
+            String id = number.ID().getText() ; 
+            long v = longValueOf(defines.get(id)) ; 
+            return String.format("/* %s */ %d",id,v) ;
+        }
     }
 
     static String cString(String s) {

@@ -56,6 +56,7 @@ const char* op_mnemonic[] = {
     "op_c2i", 
     "op_i2c", 
 
+    "op_jsr",
     "op_ret",
     "op_jumpI", 
 
@@ -148,6 +149,7 @@ void operators_registration() {
     register_operator(op_c2i,iloc_c2i); 
     register_operator(op_i2c,iloc_i2c); 
 
+    register_operator(op_jsr,iloc_jsr);
     register_operator(op_ret,iloc_ret);
     register_operator(op_jumpI,iloc_jumpI); 
 
@@ -173,14 +175,10 @@ void operators_registration() {
     validate_registration() ; 
 }
 
-int64_t PC = 0 ; 
 
 
 int64_t op() {
-    int64_t word = PROGRAM[PC] ; 
-//    fprintf(stderr,"PC=%d op=%d\n",(int) PC, (int) word) ;
-    (PC)++ ;
-    return word; 
+    return PROGRAM[cpu->pc++] ; 
 }
 
 size_t r() {
@@ -188,17 +186,18 @@ size_t r() {
 }
 
 void run() {
-//    iloc_d_reg() ; 
-//    _iloc_d_mem(0,64) ; 
-    PC = 0 ; 
+    cpu->pc = 0 ; 
     cpu->halted = false ; 
     while (!cpu->halted) {
         int64_t mn = op() ; 
-//        fprintf(stderr,"[%s]\n",op_mnemonic[mn]) ; 
+#ifdef TRACE
+        fprintf(stdout,"[%04lx::%s]\n",cpu->pc-1,op_mnemonic[mn]) ; 
+#endif
         (*dispatch[mn])() ; 
+        if (PROGRAM_RUN_LIMIT && --cpu->limit == 0) cpu->halted = true;
     }
 }
 
 void iloc_goto(int64_t adrs) {
-    PC = adrs ; 
+    cpu->pc = adrs ; 
 }

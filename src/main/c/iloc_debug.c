@@ -33,13 +33,14 @@ void iloc_p_prompt() {
 }
 
 void iloc_d_reg() {
-    for (size_t i = 0; i < cpu->reg_count /*+EXTRA_REGS*/ ; i++) {
-        printf("r%zu = 0x%016" PRIx64 " (%" PRId64 ")\n", i, cpu->regs[i], (int64_t)cpu->regs[i]);
+    for (int i = 0; i < cpu->reg_count /*+EXTRA_REGS*/ ; i++) {
+        printf("r%-2d = 0x%016" PRIx64 " (%" PRId64 ")\n", i, cpu->regs[i], (int64_t)cpu->regs[i]);
     }
-    printf("r_ra = 0x%016" PRIx64 "\n", cpu->regs[cpu->reg_count+R_RA_OFFSET]);
+    printf("pc  = 0x%04lx\n", cpu->pc);
     printf("r_static = 0x%016" PRIx64 "\n", cpu->regs[cpu->reg_count+R_STATIC_OFFSET]);
-    printf("r_argc = 0x%016" PRIx64 " (%" PRId64 ")\n", cpu->regs[cpu->reg_count+R_ARGC_OFFSET], (int64_t) cpu->regs[cpu->reg_count+R_ARGC_OFFSET]);
-    printf("r_argv = 0x%016" PRIx64 "\n", cpu->regs[cpu->reg_count+R_ARGV_OFFSET]);
+    printf("r_argc   = 0x%016" PRIx64 " (%" PRId64 ")\n", cpu->regs[cpu->reg_count+R_ARGC_OFFSET], (int64_t) cpu->regs[cpu->reg_count+R_ARGC_OFFSET]);
+    printf("r_argv   = 0x%016" PRIx64 "\n", cpu->regs[cpu->reg_count+R_ARGV_OFFSET]);
+    printf("r_ra     = 0x%016" PRIx64 "\n", cpu->regs[cpu->reg_count+R_RA_OFFSET]);
 }
 
 
@@ -52,6 +53,7 @@ void _iloc_d_mem(int64_t a, int64_t b) {
         if ((i % 16u) == 0) printf("%08" PRIx64 ": ", a + i);
         printf("%02x ", cpu->mem[a + i]);
         if ((i % 16u) == 15u) putchar('\n');
+        else if (i % 8 == 7) printf("| ") ; 
     }
     if ((n % 16u) != 0u) putchar('\n');
 }

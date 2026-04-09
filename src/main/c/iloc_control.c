@@ -32,9 +32,15 @@ void iloc_ret() {
     iloc_goto(cpu->regs[r1]) ; 
 }
 
+void iloc_jsr() {
+    int64_t imm = op() ; 
+    cpu->regs[cpu->reg_count+R_RA_OFFSET] = cpu->pc;
+    iloc_goto(imm) ; 
+}
+
 void iloc_jumpI() {
     int64_t imm = op() ; 
-    cpu->regs[cpu->reg_count+R_RA_OFFSET] = PC;
+//Z NO MORE    cpu->regs[cpu->reg_count+R_RA_OFFSET] = PC;
     iloc_goto(imm) ; 
 }
 

@@ -14,14 +14,24 @@ program
 directive
     : memoryDirective
     | registersDirective
+    | limitDirective
+    | defineDirective
     ;
 
 memoryDirective
-    : DOT_MEMORY number
+    : DOT_MEMORY NUMBER
     ;
 
 registersDirective
-    : DOT_REGISTERS number
+    : DOT_REGISTERS NUMBER
+    ;
+
+limitDirective
+    : DOT_LIMIT NUMBER
+    ;
+
+defineDirective
+    : DOT_DEFINE ID NUMBER
     ;
 
 dataSection
@@ -64,7 +74,7 @@ instruction0
     ; 
 
 instruction1
-    : ret  | jumpI
+    : jsr | ret  | jumpI
     | pInt | pChar | pStr | pPrompt 
     ;
 
@@ -147,7 +157,8 @@ cmpNE : CMP_NE reg COMMA reg ARROW reg ;
 
 cbr : CBR reg ARROW ID COMMA ID ;
 
-ret   : RET ARROW reg ;
+jsr   : JSR ID ; 
+ret   : RET reg ;
 jumpI : JUMPI ARROW ID ;
 
 pInt : P_INT reg ;
@@ -172,7 +183,7 @@ reg
     | R_ARGV
     ;
 
-number : NUMBER ;
+number : NUMBER | QM ID ;
 stringLiteral : STRING ;
 
 /* =========================
@@ -181,6 +192,8 @@ stringLiteral : STRING ;
 
 DOT_MEMORY    : '.memory' ;
 DOT_REGISTERS : '.registers' ;
+DOT_LIMIT     : '.limit' ; 
+DOT_DEFINE    : '.define' ;
 DOT_DATA      : '.data' ;
 DOT_CODE      : '.code' ;
 
@@ -237,6 +250,7 @@ C2C           : 'c2c' ;
 C2I           : 'c2i' ;
 I2C           : 'i2c' ;
 
+JSR           : 'jsr' ;
 RET           : 'ret' ;
 JUMPI         : 'jumpI' ;
 
@@ -269,6 +283,7 @@ ARROW         : '=>' ;
 COMMA         : ',' ;
 COLON         : ':' ;
 AT            : '@' ;
+QM            : '?' ;
 
 REGISTER_NUM  : 'r' [0-9]+ ;
 
